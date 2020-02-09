@@ -130,7 +130,7 @@ function getIsometricY(x, y, tile, scaleY) {
 
 function drawIsometric( currentSet, texture, src, camera) {
     //32
-    console.log(src);
+    //console.log(src);
     var alpha = camera.alpha * src.alpha;
     var renderTiles = src.culledTiles;
     var tileCount = renderTiles.length;
@@ -148,7 +148,7 @@ function drawIsometric( currentSet, texture, src, camera) {
 
     var sx = src.scaleX;
     var sy = src.scaleY;
-
+    
     for (var i = 0; i < tileCount; i++) {
         var tile = renderTiles[i];
         

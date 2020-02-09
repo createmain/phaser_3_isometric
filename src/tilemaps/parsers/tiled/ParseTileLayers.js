@@ -214,7 +214,6 @@ var ParseTileLayers = function (json, insertNull)
                 var bigAxis = curl.width >= curl.height ? curl.width : curl.height;
                 var smallAxis = curl.width <= curl.height ? curl.width : curl.height;
 
-
                 var widthAxis = 0;
                 var k = 0;
                 for (var i = 0; i < height; i++) {
