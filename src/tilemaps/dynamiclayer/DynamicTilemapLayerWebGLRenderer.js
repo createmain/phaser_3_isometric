@@ -23,7 +23,6 @@ var Utils = require('../../renderer/webgl/Utils');
 var DynamicTilemapLayerWebGLRenderer = function (renderer, src, interpolationPercentage, camera)
 {
     //TextureTintPipeline
-    //console.log(src.tilemap.orientation);
     src.cull(camera);
 
     var renderTiles = src.culledTiles;
@@ -113,27 +112,12 @@ var DynamicTilemapLayerWebGLRenderer = function (renderer, src, interpolationPer
     }
 };
 
-function getIsometricStackLevel(x, y) {
-
-    return x + y;
-}
-
-function getIsometricX(x, y, tile, scaleX) {
-    var tw = tile.width * 0.5;
-    return x + ((tw + tile.pixelX) * scaleX);
-}
-function getIsometricY(x, y, tile, scaleY) {
-    var th = tile.height * 0.5;
-    return y + ((th + tile.pixelY) * scaleY);
-}
-
-
-function drawIsometric( currentSet, texture, src, camera) {
+function drawIsometric(currentSet, texture, src, camera) {
     //32
-    //console.log(src);
+    //console.log(src.layer.name);
     var alpha = camera.alpha * src.alpha;
     var renderTiles = src.culledTiles;
-    var tileCount = renderTiles.length;
+    //var tileCount = renderTiles.length;
     
     var gidMap = src.gidMap;
     var pipeline = src.pipeline;
@@ -149,21 +133,33 @@ function drawIsometric( currentSet, texture, src, camera) {
     var sx = src.scaleX;
     var sy = src.scaleY;
     
+    var bigAxis = src.tilemap.width >= src.tilemap.height ? src.tilemap.width : src.tilemap.height;
+
+    var paddingX = bigAxis * src.tilemap.tileWidth * 0.5;
+
+    var i = 0;
+    
+    var tileCount = renderTiles.length;
+
     for (var i = 0; i < tileCount; i++) {
         var tile = renderTiles[i];
-        
+
+        if(tile === undefined) {
+            continue;
+        }
         tileset = gidMap[tile.index];
-        if (tileset !== currentSet)
-        {
-            return;
+        if (tileset !== currentSet) {
+            continue;
         }
 
         var tileTexCoords = tileset.getTileTextureCoordinates(tile.index);
 
-        if (tileTexCoords === null)
-        {
-            return;
+        if (tileTexCoords === null) {
+            continue;
         }
+
+        var j = tile.y;
+        var k = tile.x;
 
         var frameWidth = tile.width;
         var frameHeight = tile.height;
@@ -171,8 +167,10 @@ function drawIsometric( currentSet, texture, src, camera) {
         var frameX = tileTexCoords.x;
         var frameY = tileTexCoords.y;
 
-        var tw = tile.width * 0.5;
-        var th = tile.height * 0.5;
+        var tw = tile.baseWidth * 0.5;
+        var th = tile.baseHeight * 0.5;
+
+        var tilePaddingY = tile.baseHeight - tile.height;
 
         var tint = getTint(tile.tint, alpha * tile.alpha);
 
@@ -180,14 +178,13 @@ function drawIsometric( currentSet, texture, src, camera) {
             src,
             texture,
             texture.width, texture.height,
-            getIsometricX(x, y, tile, sx), getIsometricY(x, y, tile, sy),
-            //x + ((tw + tile.pixelX) * sx), y + ((th + tile.pixelY) * sy),
+            paddingX - j * tw + x + ((tw + tile.pixelX * 0.5) * sx), y + ((th + tile.pixelY + k * th) * sy) - j * th + tilePaddingY,
             tile.width, tile.height,
             sx, sy,
             tile.rotation,
             tile.flipX, tile.flipY,
             scrollFactorX, scrollFactorY,
-            tw, th,
+            tw, th ,
             frameX, frameY, frameWidth, frameHeight,
             tint, tint, tint, tint, false,
             0, 0,

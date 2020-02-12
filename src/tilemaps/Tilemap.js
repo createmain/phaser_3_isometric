@@ -1535,7 +1535,6 @@ var Tilemap = new Class({
      */
     putTilesAt: function (tilesArray, tileX, tileY, recalculateFaces, layer)
     {
-        console.log("TEST");
         layer = this.getLayer(layer);
 
         if (this._isStaticCall(layer, 'putTilesAt')) { return this; }

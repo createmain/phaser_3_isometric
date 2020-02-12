@@ -205,140 +205,42 @@ var ParseTileLayers = function (json, insertNull)
             });
 
             var row = [];
-            
-            if (json.orientation === "isometric") {
-                //  Loop through the data field in the JSON.
-                console.log(curl);
-                //*
-                var height = curl.width + curl.height - 1;
-                var bigAxis = curl.width >= curl.height ? curl.width : curl.height;
-                var smallAxis = curl.width <= curl.height ? curl.width : curl.height;
 
-                var widthAxis = 0;
-                var k = 0;
-                for (var i = 0; i < height; i++) {
+            //  Loop through the data field in the JSON.
+            for (var k = 0, len = curl.data.length; k < len; k++)
+            {
+                gidInfo = ParseGID(curl.data[k]);
 
-                    console.log("widthAxis:" + widthAxis);
-                    for (var j = 0; j < widthAxis + 1; j++) {
-                        gidInfo = ParseGID(curl.data[k]);
-    
-                        //  index, x, y, width, height
+                //Isometric Check Point
 
-                        console.log(j * json.tilewidth);
-                        console.log(i * json.tileheight);
-                        if (gidInfo.gid > 0)
-                        {
-                            //function Tile (layer, index, x, y, width, height, baseWidth, baseHeight)
-                            tile = new Tile(layerData, gidInfo.gid, j, i, json.tilewidth,
-                                json.tileheight);
-    
-                            // Turning Tiled's FlippedHorizontal, FlippedVertical and FlippedAntiDiagonal
-                            // propeties into flipX, flipY and rotation
-                            tile.rotation = gidInfo.rotation;
-                            tile.flipX = gidInfo.flipped;
-    
-                            row.push(tile);
-                        }
-                        else
-                        {
-                            blankTile = insertNull
-                                ? null
-                                : new Tile(layerData, -1, j, i, json.tilewidth, json.tileheight);
-                            row.push(blankTile);
-                        }
-                    }
-                    
-                    if (i < bigAxis - 1) {
-                        if(widthAxis < smallAxis + 1) {
-                            widthAxis += 1;
-                        }
-                    }
+                //  index, x, y, width, height
+                if (gidInfo.gid > 0)
+                {
+                    tile = new Tile(layerData, gidInfo.gid, x, output.length, json.tilewidth,
+                        json.tileheight);
 
-                    if(i > bigAxis - 2) {
-                        widthAxis -= 1;
-                    }
+                    // Turning Tiled's FlippedHorizontal, FlippedVertical and FlippedAntiDiagonal
+                    // propeties into flipX, flipY and rotation
+                    tile.rotation = gidInfo.rotation;
+                    tile.flipX = gidInfo.flipped;
+
+                    row.push(tile);
+                }
+                else
+                {
+                    blankTile = insertNull
+                        ? null
+                        : new Tile(layerData, -1, x, output.length, json.tilewidth, json.tileheight);
+                    row.push(blankTile);
+                }
+
+                x++;
+
+                if (x === curl.width)
+                {
                     output.push(row);
+                    x = 0;
                     row = [];
-
-                    k++;
-                }
-                //*/
-                /*
-                for (var k = 0, len = curl.data.length; k < len; k++)
-                {
-                    gidInfo = ParseGID(curl.data[k]);
-
-                    //Isometric Check Point
-
-                    //  index, x, y, width, height
-                    if (gidInfo.gid > 0)
-                    {
-                        tile = new Tile(layerData, gidInfo.gid, x, output.length, json.tilewidth,
-                            json.tileheight);
-
-                        // Turning Tiled's FlippedHorizontal, FlippedVertical and FlippedAntiDiagonal
-                        // propeties into flipX, flipY and rotation
-                        tile.rotation = gidInfo.rotation;
-                        tile.flipX = gidInfo.flipped;
-
-                        row.push(tile);
-                    }
-                    else
-                    {
-                        blankTile = insertNull
-                            ? null
-                            : new Tile(layerData, -1, x, output.length, json.tilewidth, json.tileheight);
-                        row.push(blankTile);
-                    }
-
-                    x++;
-
-                    if (x === curl.width)
-                    {
-                        output.push(row);
-                        x = 0;
-                        row = [];
-                    }
-                }
-
-                //*/
-            } else {
-                //  Loop through the data field in the JSON.
-                for (var k = 0, len = curl.data.length; k < len; k++)
-                {
-                    gidInfo = ParseGID(curl.data[k]);
-
-                    //Isometric Check Point
-
-                    //  index, x, y, width, height
-                    if (gidInfo.gid > 0)
-                    {
-                        tile = new Tile(layerData, gidInfo.gid, x, output.length, json.tilewidth,
-                            json.tileheight);
-
-                        // Turning Tiled's FlippedHorizontal, FlippedVertical and FlippedAntiDiagonal
-                        // propeties into flipX, flipY and rotation
-                        tile.rotation = gidInfo.rotation;
-                        tile.flipX = gidInfo.flipped;
-
-                        row.push(tile);
-                    }
-                    else
-                    {
-                        blankTile = insertNull
-                            ? null
-                            : new Tile(layerData, -1, x, output.length, json.tilewidth, json.tileheight);
-                        row.push(blankTile);
-                    }
-
-                    x++;
-
-                    if (x === curl.width)
-                    {
-                        output.push(row);
-                        x = 0;
-                        row = [];
-                    }
                 }
             }
             

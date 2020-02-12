@@ -40,10 +40,18 @@ var ParseJSONTiled = function (name, json, insertNull)
         return null;
     }
 
+    var width = json.width;
+    var height = json.height;
+    /*
+    if( json.orientation == 'isometric' ) {
+        width = json.width + json.height - 1;
+        height = width;
+    }
+    */
     //  Map data will consist of: layers, objects, images, tilesets, sizes
     var mapData = new MapData({
-        width: json.width,
-        height: json.height,
+        width: width,
+        height: height,
         name: name,
         tileWidth: json.tilewidth,
         tileHeight: json.tileheight,
