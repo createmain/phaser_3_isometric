@@ -135,7 +135,7 @@ function drawIsometric(currentSet, texture, src, camera) {
     
     var bigAxis = src.tilemap.width >= src.tilemap.height ? src.tilemap.width : src.tilemap.height;
 
-    var paddingX = bigAxis * src.tilemap.tileWidth * 0.5;
+    var paddingX = (bigAxis - 1) * src.tilemap.tileWidth * 0.5;
 
     var i = 0;
     
