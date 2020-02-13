@@ -1,3 +1,7 @@
+It's custom for tiled isometric.
+https://bluesky78.tistory.com/60
+https://youtu.be/np0r-_WDWm8
+
 # Phaser - HTML5 Game Framework
 
 ![Phaser Header](https://phaser.io/images/github/300/phaser-header.png "Phaser 3 Header Banner")
