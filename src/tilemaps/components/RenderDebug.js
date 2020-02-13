@@ -47,6 +47,7 @@ var RenderDebug = function (graphics, styleConfig, layer)
 
     for (var i = 0; i < tiles.length; i++)
     {
+
         var tile = tiles[i];
 
         var tw = tile.width;
@@ -56,26 +57,43 @@ var RenderDebug = function (graphics, styleConfig, layer)
 
         var color = tile.collides ? collidingTileColor : tileColor;
 
+        var bigAxis = layer.tilemapLayer.tilemap.width >= layer.tilemapLayer.tilemap.height ? layer.tilemapLayer.tilemap.width : layer.tilemapLayer.tilemap.height;
+        var paddingX = bigAxis * layer.tilemapLayer.tilemap.tileWidth * 0.5;
+        var hw = layer.tilemapLayer.tilemap.tileWidth * 0.5; //half width
+        var hh = layer.tilemapLayer.tilemap.tileHeight * 0.5; //half height
         if (color !== null)
         {
             graphics.fillStyle(color.color, color.alpha / 255);
-            graphics.fillRect(x, y, tw, th);
-        }
-
-        // Inset the face line to prevent neighboring tile's lines from overlapping
-        x += 1;
-        y += 1;
-        tw -= 2;
-        th -= 2;
-
-        if (faceColor !== null)
-        {
-            graphics.lineStyle(1, faceColor.color, faceColor.alpha / 255);
-
-            if (tile.faceTop) { graphics.lineBetween(x, y, x + tw, y); }
-            if (tile.faceRight) { graphics.lineBetween(x + tw, y, x + tw, y + th); }
-            if (tile.faceBottom) { graphics.lineBetween(x, y + th, x + tw, y + th); }
-            if (tile.faceLeft) { graphics.lineBetween(x, y, x, y + th); }
+            
+            if (layer.tilemapLayer.tilemap.orientation === "isometric") {
+               var tx = paddingX + tile.x * hw - tile.y * hw;
+               var ty = tile.y * hh + tile.x * hh;
+               var polygon = new Phaser.Geom.Polygon([
+                   tx, ty,
+                   tx + hw, ty + hh,
+                   tx, ty + layer.tilemapLayer.tilemap.tileHeight,
+                   tx - hw, ty + hh
+               ]);
+   
+               graphics.fillPoints(polygon.points, true);
+            } else {
+                graphics.fillRect(x, y, tw, th);
+                // Inset the face line to prevent neighboring tile's lines from overlapping
+                x += 1;
+                y += 1;
+                tw -= 2;
+                th -= 2;
+        
+                if (faceColor !== null)
+                {
+                    graphics.lineStyle(1, faceColor.color, faceColor.alpha / 255);
+        
+                    if (tile.faceTop) { graphics.lineBetween(x, y, x + tw, y); }
+                    if (tile.faceRight) { graphics.lineBetween(x + tw, y, x + tw, y + th); }
+                    if (tile.faceBottom) { graphics.lineBetween(x, y + th, x + tw, y + th); }
+                    if (tile.faceLeft) { graphics.lineBetween(x, y, x, y + th); }
+                }
+            }
         }
     }
 };
