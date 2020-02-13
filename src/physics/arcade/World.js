@@ -32,6 +32,9 @@ var TransformMatrix = require('../../gameobjects/components/TransformMatrix');
 var Vector2 = require('../../math/Vector2');
 var Wrap = require('../../math/Wrap');
 
+var SAT = require('sat'); //isometric collision check
+var GetWorldPositionFromIsometricTile = require('../../tilemaps/components/GetWorldPositionFromIsometricTile');
+
 /**
  * @classdesc
  * The Arcade Physics World.
@@ -2212,30 +2215,55 @@ var World = new Class({
                 continue;
             }
 
-            tilemapLayer = tile.tilemapLayer;
+            if (tile.tilemap.orientation === "isometric") {
+                var area = GetWorldPositionFromIsometricTile(tile,tile.layer);
+                
+                //console.log(area);
+                //console.log(tile);
+                var V = SAT.Vector;
+                var P = SAT.Polygon;
+                
+                // A square
+                var polygon1 = new P(new V(0,0), [
+                  new V(area[0],area[1]), new V(area[2],area[3]), new V(area[4],area[5]), new V(area[6],area[7])
+                ]);
+                // A triangle
+                var polygon2 = new P(new V(0,0), [
+                  new V(sprite.x, sprite.y),new V(sprite.x + sprite.width, sprite.y),new V(sprite.x + sprite.width, sprite.y + sprite.height),new V(sprite.x, sprite.y + sprite.height),
+                ]);
+                var response = new SAT.Response();
+                collision = SAT.testPolygonPolygon(polygon1, polygon2, response);
+            } else {
 
-            tileWorldRect.left = tilemapLayer.tileToWorldX(tile.x);
-            tileWorldRect.top = tilemapLayer.tileToWorldY(tile.y);
+                tilemapLayer = tile.tilemapLayer;
 
-            // If the map's base tile size differs from the layer's tile size, only the top of the rect
-            // needs to be adjusted since its origin is (0, 1).
-            if (tile.baseHeight !== tile.height)
-            {
-                tileWorldRect.top -= (tile.height - tile.baseHeight) * tilemapLayer.scaleY;
+                tileWorldRect.left = tilemapLayer.tileToWorldX(tile.x);
+                tileWorldRect.top = tilemapLayer.tileToWorldY(tile.y);
+
+                // If the map's base tile size differs from the layer's tile size, only the top of the rect
+                // needs to be adjusted since its origin is (0, 1).
+                if (tile.baseHeight !== tile.height)
+                {
+                    tileWorldRect.top -= (tile.height - tile.baseHeight) * tilemapLayer.scaleY;
+                }
+
+                tileWorldRect.right = tileWorldRect.left + tile.width * tilemapLayer.scaleX;
+                tileWorldRect.bottom = tileWorldRect.top + tile.height * tilemapLayer.scaleY;
+
+                if (TileIntersectsBody(tileWorldRect, body)
+                    && (!processCallback || processCallback.call(callbackContext, sprite, tile))
+                    && ProcessTileCallbacks(tile, sprite)
+                    && (overlapOnly || SeparateTile(i, body, tile, tileWorldRect, tilemapLayer, this.TILE_BIAS, isLayer)))
+                {
+                    this._total++;
+
+                    collision = true;
+
+                    
+                }
             }
 
-            tileWorldRect.right = tileWorldRect.left + tile.width * tilemapLayer.scaleX;
-            tileWorldRect.bottom = tileWorldRect.top + tile.height * tilemapLayer.scaleY;
-
-            if (TileIntersectsBody(tileWorldRect, body)
-                && (!processCallback || processCallback.call(callbackContext, sprite, tile))
-                && ProcessTileCallbacks(tile, sprite)
-                && (overlapOnly || SeparateTile(i, body, tile, tileWorldRect, tilemapLayer, this.TILE_BIAS, isLayer)))
-            {
-                this._total++;
-
-                collision = true;
-
+            if (collision) {
                 if (collideCallback)
                 {
                     collideCallback.call(callbackContext, sprite, tile);
