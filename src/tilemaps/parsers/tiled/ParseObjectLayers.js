@@ -74,10 +74,23 @@ var ParseObjectLayers = function (json)
         var offsetY = curGroupState.y + GetFastValue(curo, 'starty', 0) + GetFastValue(curo, 'offsety', 0);
 
         var objects = [];
+        var bigAxis = json.width >= json.height ? json.width : json.height;
+
         for (var j = 0; j < curo.objects.length; j++)
         {
             var parsedObject = ParseObject(curo.objects[j], offsetX, offsetY);
 
+            if (json.orientation === "isometric") {
+                var tw = json.tilewidth * 0.5;
+                var th = json.tileheight * 0.5;
+                tileX = Math.floor(parsedObject.x / json.tileheight);
+                tileY = Math.floor(parsedObject.y / json.tileheight);
+                parsedObject.x = bigAxis *  tw   //지도의 0.0 위치
+                        + tileX * tw // X위치 만큼 들어감
+                        - tileY * tw;
+                parsedObject.y = tileY * th
+                             + tileX * th;
+            }
             objects.push(parsedObject);
         }
 
