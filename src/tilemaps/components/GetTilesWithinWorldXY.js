@@ -9,7 +9,6 @@ var SAT = require('sat');
 var GetTilesWithin = require('./GetTilesWithin');
 var WorldToTileX = require('./WorldToTileX');
 var WorldToTileY = require('./WorldToTileY');
-var GetWorldPositionFromIsometricTile = require('./GetWorldPositionFromIsometricTile');
 var GetFastValue = require('../../utils/object/GetFastValue');
 
 /**
@@ -34,13 +33,15 @@ var GetFastValue = require('../../utils/object/GetFastValue');
  */
 function getCandidates(layer, tileX, tileY) {
     var candidates = [];
-    for(var x = -1; x < 2 ; x++) {
-        for(var y = -1; y < 2 ; y ++) {
-            if(tileX + x > -1 && tileX + x < layer.width) {
-                if (tileY + y > -1 && tileY + y < layer.height) {
+    for(var x = -2; x < 3 ; x++) {
+        for(var y = -2; y < 3 ; y ++) {
+            if(tileX + x > -1 && tileX + x < layer.width) { //In world
+                if (tileY + y > -1 && tileY + y < layer.height) { // In world
                     var tile = layer.data[tileY + y][tileX + x];
                     if(tile !== null) {
-                        candidates.push(tile);
+                        if(tile.index > -1) {
+                            candidates.push(tile);
+                        }
                     }
                 }
             }
@@ -51,7 +52,6 @@ function getCandidates(layer, tileX, tileY) {
 var GetTilesWithinWorldXY = function (worldX, worldY, width, height, filteringOptions, camera, layer)
 {
     if (layer.tilemapLayer.tilemap.orientation === "isometric") {
-        
         var a = worldX * 0.5 + worldY - layer.tileHeight * 3;
         var b = worldX * -0.5 + worldY + layer.tileHeight * 6;
         var tileX = Math.floor(a / layer.tileHeight);
@@ -77,28 +77,6 @@ var GetTilesWithinWorldXY = function (worldX, worldY, width, height, filteringOp
                     if (isColliding && !tile.collides) { continue; }
                     if (hasInterestingFace && !tile.hasInterestingFace) { continue; }
 
-                    /*
-                    var area = GetWorldPositionFromIsometricTile(tile, layer);
-                
-                    //console.log(area);
-                    //console.log(tile);
-                    var V = SAT.Vector;
-                    var P = SAT.Polygon;
-                    
-                    // A square
-                    var polygon1 = new P(new V(0,0), [
-                      new V(area[0],area[1]), new V(area[2],area[3]), new V(area[4],area[5]), new V(area[6],area[7])
-                    ]);
-                    // A triangle
-                    var polygon2 = new P(new V(0,0), [
-                      new V(worldX, worldY),new V(worldX + width, worldY),new V(worldX + width, worldY + height),new V(worldX, worldY + height),
-                    ]);
-                    var response = new SAT.Response();
-                    var collided = SAT.testPolygonPolygon(polygon1, polygon2, response);
-                    if (collided) {
-                        results.push(tile);
-                    }
-                    */
                    results.push(tile);
                 }
             }
