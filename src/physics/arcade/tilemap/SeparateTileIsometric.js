@@ -105,22 +105,18 @@ var SeparateTileIsometric = function (i, body, tile, tileWorldRect, tilemapLayer
     } else {
         //LineCheck
         if (SAT.testPolygonPolygon(tileArea, left, response)) {
-            console.log("left");
             body.position.x += (area[2] - body.x);
             collision = true;
         }
         if (SAT.testPolygonPolygon(tileArea, right, response)) {
-            console.log("right");
             body.position.x -= (body.x + body.width - area[6]);
             collision = true;
         }
         if (SAT.testPolygonPolygon(tileArea, north, response)) {
-            console.log("north");
             body.position.y += (area[5] - body.y);
             collision = true;
         }
         if (SAT.testPolygonPolygon(tileArea, south, response)) {
-            console.log("south");
             body.position.y -= (body.y + body.height - area[1]);
             collision = true;
         }
