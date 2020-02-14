@@ -7,7 +7,7 @@
 /**
  * Gets World Position from IsometricTile.
  *
- * @function Phaser.Tilemaps.Components.GetTilesWithin
+ * @function Phaser.Physics.Arcade.Components.GetWorldPositionFromIsometricTile
  * @private
  * @since 3.0.0
  *
@@ -16,19 +16,19 @@
  * 
  * @return {integer[]} Array of Tile objects.
  */
-var GetWorldPositionFromIsometricTile = function (tile, layer)
+var GetWorldPositionFromIsometricTile = function (tile)
 {
-    var bigAxis = layer.width >= layer.height ? layer.width : layer.height;
-    var paddingX = bigAxis * layer.tileWidth * 0.5;
-    var hw = layer.tileWidth * 0.5; //half width
-    var hh = layer.tileHeight * 0.5; //half height
+    var bigAxis = tile.layer.width >= tile.layer.height ? tile.layer.width : tile.layer.height;
+    var paddingX = bigAxis * tile.layer.tileWidth * 0.5;
+    var hw = tile.layer.tileWidth * 0.5; //half width
+    var hh = tile.layer.tileHeight * 0.5; //half height
 
     var tx = paddingX + tile.x * hw - tile.y * hw;
     var ty = tile.y * hh + tile.x * hh;
 
     var list = [tx, ty,
         tx + hw, ty + hh,
-        tx, ty + layer.tileHeight,
+        tx, ty + tile.layer.tileHeight,
         tx - hw, ty + hh];
 
     return list;

@@ -7,6 +7,7 @@
 var TileCheckX = require('./TileCheckX');
 var TileCheckY = require('./TileCheckY');
 var TileIntersectsBody = require('./TileIntersectsBody');
+var GetWorldPositionFromIsometricTile = require('../components/GetWorldPositionFromIsometricTile');
 
 /**
  * The core separation function to separate a physics body and a tile.
@@ -37,6 +38,16 @@ var SeparateTile = function (i, body, tile, tileWorldRect, tilemapLayer, tileBia
     {
         faceHorizontal = true;
         faceVertical = true;
+    }
+
+    
+    if (tile.tilemap.orientation === "isometric") {
+        console.log("isometric");
+        body.velocity.x = 0;
+        var temp = GetWorldPositionFromIsometricTile(tile);
+        var ox = body.right - tileLeft;
+        body.position.x += ox;
+        return true;
     }
 
     //  We don't need to go any further if this tile doesn't actually have any colliding faces. This
@@ -83,6 +94,7 @@ var SeparateTile = function (i, body, tile, tileWorldRect, tilemapLayer, tileBia
                 return true;
             }
         }
+
 
         if (faceVertical)
         {
