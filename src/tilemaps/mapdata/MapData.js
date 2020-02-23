@@ -89,7 +89,11 @@ var MapData = new Class({
          * @type {number}
          * @since 3.0.0
          */
-        this.widthInPixels = GetFastValue(config, 'widthInPixels', this.width * this.tileWidth);
+        var defaultValue = this.width * this.tileWidth;
+        if (config.orientation === "isometric") {
+            defaultValue = (this.width + this.height) * this.tileWidth / 2;
+        }
+        this.widthInPixels = GetFastValue(config, 'widthInPixels', defaultValue);
 
         /**
          * The height in pixels of the entire tilemap.
@@ -98,7 +102,12 @@ var MapData = new Class({
          * @type {number}
          * @since 3.0.0
          */
-        this.heightInPixels = GetFastValue(config, 'heightInPixels', this.height * this.tileHeight);
+        
+        var defaultValue = this.height * this.tileHeight;
+        if (config.orientation === "isometric") {
+            defaultValue = (this.width + this.height) * this.tileHeight / 2;
+        }
+        this.heightInPixels = GetFastValue(config, 'heightInPixels', defaultValue);
 
         /**
          * [description]

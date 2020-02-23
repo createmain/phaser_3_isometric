@@ -32,9 +32,11 @@ var GetFastValue = require('../../utils/object/GetFastValue');
  * @return {Phaser.Tilemaps.Tile[]} Array of Tile objects.
  */
 function getCandidates(layer, tileX, tileY) {
+
+    var scope = 3;
     var candidates = [];
-    for(var x = -2; x < 3 ; x++) {
-        for(var y = -2; y < 3 ; y ++) {
+    for(var x = -scope; x <= scope ; x++) {
+        for(var y = -scope; y <= scope ; y ++) {
             if(tileX + x > -1 && tileX + x < layer.width) { //In world
                 if (tileY + y > -1 && tileY + y < layer.height) { // In world
                     var tile = layer.data[tileY + y][tileX + x];
@@ -52,11 +54,23 @@ function getCandidates(layer, tileX, tileY) {
 var GetTilesWithinWorldXY = function (worldX, worldY, width, height, filteringOptions, camera, layer)
 {
     if (layer.tilemapLayer.tilemap.orientation === "isometric") {
-        var a = worldX * 0.5 + worldY - layer.tileHeight * 3;
-        var b = worldX * -0.5 + worldY + layer.tileHeight * 6;
-        var tileX = Math.floor(a / layer.tileHeight);
-        var tileY = Math.floor(b / layer.tileHeight);
+        //TODO: Camera 적용 필요
+        //좌표계 수정 필요
+        //지도의 X를 기준으로 y값이 0일때 X와 Y 값을 구하여 넓이로 나누어 tile의 X와 Y위치 값을 구함
+        var centeredX = worldX + width / 2;
+        var centeredY = worldY + height / 2;
+        //var centeredY = worldY + height - layer.tileHeight / 2; //<--Unit의 크기 바닥으로 collision 처리하려면, 조정 필요
+        var ratio = layer.tileWidth / layer.tileHeight;
+        var centerX = layer.tileWidth / 2 * layer.height;
+        var zeroYforY = centeredX - centeredY * ratio - centerX;
+        var zeroYforX = centeredX + centeredY * ratio - centerX;
 
+        //console.log(zeroYforX + " / " + zeroYforY);
+
+        var tileX = Math.floor(zeroYforX / layer.tileWidth);
+        var tileY = - Math.floor(zeroYforY / layer.tileWidth);
+
+        //console.log(tileX + " / " + tileY);
         
         var isNotEmpty = GetFastValue(filteringOptions, 'isNotEmpty', false);
         var isColliding = GetFastValue(filteringOptions, 'isColliding', false);

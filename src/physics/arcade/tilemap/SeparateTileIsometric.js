@@ -56,6 +56,7 @@ var SeparateTileIsometric = function (i, body, tile, tileWorldRect, tilemapLayer
         new V(body.x + body.width, body.y + body.height)
     ]);
 
+
     //Points Check
     if (SAT.pointInPolygon(new V(body.x, body.y + body.height), tileArea)) { //왼쪽 아래
         //기울기
@@ -66,8 +67,8 @@ var SeparateTileIsometric = function (i, body, tile, tileWorldRect, tilemapLayer
         //body.x만 가지고 계산한것은 왼쪽 위나 아래의 x위치는 같기 때문이다.
         var diffY = body.y + body.height - area[1] - degreeY * (body.x - area[0]);
 
-        body.position.x -= diffX;
-        body.position.y -= diffY;
+        body.position.x -= diffX; //위치 보정
+        body.position.y -= diffY; //위치 보정
         collision = true;
     } else if (SAT.pointInPolygon(new V(body.x, body.y), tileArea)) { //왼쪽 위에
         //기울기
@@ -121,6 +122,7 @@ var SeparateTileIsometric = function (i, body, tile, tileWorldRect, tilemapLayer
             collision = true;
         }
     }
+    //console.log(collision);
     return collision;
 };
 

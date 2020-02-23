@@ -45,20 +45,22 @@ var CullTiles = function (layer, camera, outputArray, renderOrder)
     var drawTop = 0;
     var drawBottom = mapHeight;
 
-    if (!tilemapLayer.skipCull && tilemapLayer.scrollFactorX === 1 && tilemapLayer.scrollFactorY === 1)
-    {
-        //  Camera world view bounds, snapped for scaled tile size
-        //  Cull Padding values are given in tiles, not pixels
-
-        var boundsLeft = SnapFloor(camera.worldView.x - tilemapLayer.x, tileW, 0, true) - tilemapLayer.cullPaddingX;
-        var boundsRight = SnapCeil(camera.worldView.right - tilemapLayer.x, tileW, 0, true) + tilemapLayer.cullPaddingX;
-        var boundsTop = SnapFloor(camera.worldView.y - tilemapLayer.y, tileH, 0, true) - tilemapLayer.cullPaddingY;
-        var boundsBottom = SnapCeil(camera.worldView.bottom - tilemapLayer.y, tileH, 0, true) + tilemapLayer.cullPaddingY;
-
-        drawLeft = Math.max(0, boundsLeft);
-        drawRight = Math.min(mapWidth, boundsRight);
-        drawTop = Math.max(0, boundsTop);
-        drawBottom = Math.min(mapHeight, boundsBottom);
+    if (tilemap.orientation !== "isometric") {
+        if (!tilemapLayer.skipCull && tilemapLayer.scrollFactorX === 1 && tilemapLayer.scrollFactorY === 1)
+        {
+            //  Camera world view bounds, snapped for scaled tile size
+            //  Cull Padding values are given in tiles, not pixels
+    
+            var boundsLeft = SnapFloor(camera.worldView.x - tilemapLayer.x, tileW, 0, true) - tilemapLayer.cullPaddingX;
+            var boundsRight = SnapCeil(camera.worldView.right - tilemapLayer.x, tileW, 0, true) + tilemapLayer.cullPaddingX;
+            var boundsTop = SnapFloor(camera.worldView.y - tilemapLayer.y, tileH, 0, true) - tilemapLayer.cullPaddingY;
+            var boundsBottom = SnapCeil(camera.worldView.bottom - tilemapLayer.y, tileH, 0, true) + tilemapLayer.cullPaddingY;
+    
+            drawLeft = Math.max(0, boundsLeft);
+            drawRight = Math.min(mapWidth, boundsRight);
+            drawTop = Math.max(0, boundsTop);
+            drawBottom = Math.min(mapHeight, boundsBottom);
+        }
     }
 
     var x;
